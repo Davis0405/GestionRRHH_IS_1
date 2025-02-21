@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Lista de Empleados</h2>
+<a href="{% url 'nuevo_empleado' %}" class="btn btn-primary">Nuevo Empleado</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Puesto</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for empleado in empleados %}
+        <tr>
+            <td>{{ empleado.nombre }}</td>
+            <td>{{ empleado.apellido }}</td>
+            <td>{{ empleado.puesto }}</td>
+            <td>
+                <a href="{% url 'editar_empleado' empleado.id %}" class="btn btn-warning">Editar</a>
+                <a href="{% url 'eliminar_empleado' empleado.id %}" class="btn btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

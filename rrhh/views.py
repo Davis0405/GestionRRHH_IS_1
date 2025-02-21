@@ -1,8 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
 from django.contrib.auth import logout
+from .models import Empleados
+from .forms import EmpleadoForm
+
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 def inicio(request):
     return render(request, 'inicio.html') 
@@ -40,3 +43,35 @@ def reportes(request):
 def custom_logout(request):
     logout(request)
     return redirect('login')
+#-----------------------------------------------------------------------------------------------------------------------------------------------------  
+def lista_empleados(request):
+    empleados = Empleados.objects.all()
+    return render(request, 'empleados/lista.html', {'empleados': empleados})
+
+def nuevo_empleado(request):
+    if request.method == 'POST':
+        form = EmpleadoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('lista_empleados')
+    else:
+        form = EmpleadoForm()
+    return render(request, 'empleados/form.html', {'form': form})
+
+def editar_empleado(request, empleado_id):
+    empleado = get_object_or_404(Empleados, id=empleado_id)
+    if request.method == 'POST':
+        form = EmpleadoForm(request.POST, instance=empleado)
+        if form.is_valid():
+            form.save()
+            return redirect('lista_empleados')
+    else:
+        form = EmpleadoForm(instance=empleado)
+    return render(request, 'empleados/form.html', {'form': form})
+
+def eliminar_empleado(request, empleado_id):
+    empleado = get_object_or_404(Empleados, id=empleado_id)
+    if request.method == 'POST':
+        empleado.delete()
+        return redirect('lista_empleados')
+    return render(request, 'empleados/confirmar_eliminar.html', {'empleado': empleado})
